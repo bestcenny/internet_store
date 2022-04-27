@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Список товаров</h1>
+
+{% if current_user.is_authenticated %}
+{% if current_user.access_level == 1 %}
+    <a href="stock" class="btn btn-secondary">Добавить Товар</a>
+{% endif %}
+{% endif %}
+
+{% for item in stock%}
+<div class="col-md6 border rounded">
+    <h2>{{item.name}}</h2>
+    <img src={{item.photo}} width="256" height="128">
+    <p style="font-size:22">{{item.description}}</p>
+    <h2>Цена: {{item.price}}</h2>
+    <h2>Количество на складе: {{item.amount}}</h2>
+    {% if current_user.is_authenticated %}
+    {% if item.amount > 0 %}
+    <form action="/add_button" method="post">
+        <input class="btn btn-warning" type="submit" name="add_button" value="Добавить товар в корзину ({{item.id}})">
+    </form>
+    {% else %}
+    <p><strong>Данного товара нет в наличии</strong></p>
+    {% endif %}
+    {% if current_user.access_level == 1 %}
+    <form action="/add_in_stock" method="post">
+    <input class="btn btn-success" type="submit" name="add_in_stock" value="Добавить товар на склад ({{item.id}})">
+    </form>
+    {% endif %}
+    {% endif %}
+</div>
+{% endfor %}
+{% endblock %}
